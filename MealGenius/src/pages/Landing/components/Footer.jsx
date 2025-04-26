@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center gap-2 mb-6 md:mb-0">
             <Apple className="w-6 h-6 text-orange-500" />
-            <span className="text-xl font-bold text-orange-600">NutriBlend</span>
+            <span className="text-xl font-bold text-orange-600">MealGenius</span>
           </div>
           <div className="flex gap-6">
             <a href="#" className="text-gray-600 hover:text-orange-500">Privacy</a>
@@ -16,7 +16,7 @@ export default function Footer() {
           </div>
         </div>
         <p className="text-center mt-12 text-gray-500">
-          © {new Date().getFullYear()} NutriBlend. All rights reserved.
+          © 2025 MealGenius. All rights reserved.
         </p>
       </div>
     </footer>

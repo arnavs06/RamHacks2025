@@ -3,12 +3,12 @@ import { FaHeart } from 'react-icons/fa'
 const TESTIMONIALS = [
   {
     quote: "Finally a plan I can stick to! The meals are delicious and easy to make.",
-    author: "Sarah K.",
+    author: "Moheed B.",
     stars: 5
   },
   {
     quote: "As a vegan with allergies, this app saved me so much time.",
-    author: "Alex M.",
+    author: "Eissah T.",
     stars: 4
   }
 ]

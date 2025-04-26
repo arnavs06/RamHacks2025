@@ -6,7 +6,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Apple className="w-6 h-6 text-orange-500" />
-          <span className="text-xl font-bold text-orange-600">NutriBlend</span>
+          <span className="text-xl font-bold text-orange-600">MealGenius</span>
         </div>
         <nav className="hidden md:flex gap-8">
           <a href="#" className="hover:text-orange-500 transition">Home</a>
