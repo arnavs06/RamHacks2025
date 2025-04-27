@@ -50,15 +50,23 @@ Provide breakfast, lunch, and dinner suggestions for each day of the week.
         });
 
         const data = await response.json();
+
+        // Error handling: Check if OpenAI responded correctly
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('Bad OpenAI Response:', data);
+            return res.status(500).json({ error: "Invalid AI response format" });
+        }
+
+        // Success! Send back meal plan
         res.json({ mealPlan: data.choices[0].message.content });
 
     } catch (error) {
-        console.error('Error fetching from OpenAI:', error);
-        res.status(500).json({ error: "Failed to fetch meal plan" });
+        console.error('Server Error:', error);
+        res.status(500).json({ error: "Failed to fetch meal plan from AI" });
     }
 });
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`✅ Server running on port ${PORT}`);
 });
