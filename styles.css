@@ -11,6 +11,7 @@ body {
     color: #ffffff;
     min-height: 100vh;
     padding: 20px;
+    line-height: 1.6;
 }
 
 /* Header and Progress Bar */
@@ -24,6 +25,7 @@ header h1 {
     font-size: 3rem;
     color: #00ffe7;
     text-shadow: 0 0 10px #00ffe7;
+    margin-bottom: 20px;
 }
 
 .progress-bar-container {
@@ -31,7 +33,7 @@ header h1 {
     height: 10px;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
-    margin: 20px auto 0;
+    margin: 0 auto;
     overflow: hidden;
 }
 
@@ -45,17 +47,18 @@ header h1 {
 
 /* Section Styling */
 section {
-    margin: 50px 0;
-    padding: 20px;
+    margin: 30px auto;
+    padding: 25px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    max-width: 800px;
     animation: fadeIn 0.8s ease-in;
 }
 
 section h2 {
     font-size: 2rem;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: #00ffe7;
     text-shadow: 0 0 8px #00ffe7;
 }
@@ -67,57 +70,54 @@ form label {
     font-size: 1.1rem;
 }
 
-input[type="text"], input[type="number"], select {
+input[type="text"], 
+input[type="number"], 
+select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #00ffe7;
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
     font-size: 1rem;
     margin-top: 5px;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
 }
 
-input[type="text"]:focus, input[type="number"]:focus, select:focus {
-    background-color: rgba(0, 255, 255, 0.1);
+input[type="text"]:focus, 
+input[type="number"]:focus, 
+select:focus {
+    background-color: rgba(0, 255, 255, 0.2);
     outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 /* Button Styling */
-button[type="button"] {
+button {
     background-color: #00ffe7;
     color: #0f0c29;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 8px;
     font-size: 1rem;
     margin: 10px 10px 0 0;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+    transition: all 0.3s;
+    font-weight: bold;
 }
 
-button[type="button"]:hover {
+button:hover {
     background-color: #ff00ff;
     transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.7);
 }
 
-/* Disabled Button */
-button[type="button"]:disabled {
+button:disabled {
     background-color: #555555;
     color: #cccccc;
     cursor: not-allowed;
     transform: none;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    margin-top: 50px;
-    padding: 20px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 0.9rem;
-    color: #aaa;
+    box-shadow: none;
 }
 
 /* Spinner */
@@ -137,16 +137,99 @@ footer {
 }
 
 /* Meal Plan Content */
-#mealPlanContent div {
-    background: rgba(0, 255, 255, 0.05);
-    border: 1px solid rgba(0, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
+#mealPlanContent {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
-#mealPlanContent h3 {
+.meal-plan {
+    white-space: pre-wrap;
+    font-family: Arial, sans-serif;
+    line-height: 1.8;
+}
+
+.meal-plan strong {
     color: #00ffe7;
-    text-shadow: 0 0 8px #00ffe7;
-    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.error-message {
+    color: #ff6b6b;
+    padding: 15px;
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid #ff6b6b;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    section {
+        padding: 15px;
+        margin: 20px 10px;
+    }
+    
+    button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}
+/* [All your existing CSS remains the same until the end] */
+
+/* Add these new styles at the end */
+.error-message {
+    color: #ff6b6b;
+    background: rgba(255, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ff6b6b;
+    margin: 20px 0;
+}
+
+.error-message p {
+    margin: 10px 0;
+}
+
+.error-message p:first-child {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#regenerateButton {
+    background-color: #ff6b6b;
+    margin-left: 10px;
+}
+
+#regenerateButton:hover {
+    background-color: #ff4757;
+}
+
+@media (max-width: 600px) {
+    #regenerateButton {
+        display: block;
+        margin: 10px 0 0 0;
+        width: 100%;
+    }
 }

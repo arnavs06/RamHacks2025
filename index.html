@@ -17,9 +17,9 @@
     <section id="biometrics">
         <h2>Step 1: Enter Your Biometrics</h2>
         <form id="biometricForm">
-            <label>Age: <input type="number" name="age" required></label><br><br>
-            <label>Weight (lbs): <input type="number" name="weight" required></label><br><br>
-            <label>Height (cm): <input type="number" name="height" required></label><br><br>
+            <label>Age: <input type="number" name="age" required min="1" max="120"></label><br><br>
+            <label>Weight (lbs): <input type="number" name="weight" required min="50" max="500"></label><br><br>
+            <label>Height (cm): <input type="number" name="height" required min="100" max="250"></label><br><br>
             <label>Gender:
                 <select name="gender" required>
                     <option value="">Select</option>
@@ -37,7 +37,7 @@
                     <option value="active">Very Active</option>
                 </select>
             </label><br><br>
-            <button type="button" id="nextToPreferences" onclick="showStep('preferences')" disabled>Next</button>
+            <button type="button" id="nextToPreferences" onclick="validateAndProceed('preferences')" disabled>Next</button>
         </form>
     </section>
 
@@ -57,9 +57,9 @@
             <label>Allergies (comma separated): <input type="text" name="allergies"></label><br><br>
             <label>Food Likes (comma separated): <input type="text" name="likes"></label><br><br>
             <label>Food Dislikes (comma separated): <input type="text" name="dislikes"></label><br><br>
-            <label>Budget (per week in $): <input type="number" name="budget" required></label><br><br>
+            <label>Budget (per week in $): <input type="number" name="budget" required min="20" max="1000"></label><br><br>
             <button type="button" onclick="showStep('biometrics')">Back</button>
-            <button type="button" id="nextToRecommendations" onclick="showStep('recommendations')" disabled>Next</button>
+            <button type="button" id="nextToRecommendations" onclick="validateAndProceed('recommendations')" disabled>Get Meal Plan</button>
         </form>
     </section>
 
@@ -67,12 +67,11 @@
         <h2>Step 3: Your AI Meal Plan</h2>
         <div id="loadingSpinner" style="display: none;">
             <div class="spinner"></div>
-            <p>Loading your personalized plan...</p>
+            <p>Generating your personalized plan...</p>
         </div>
-        <div id="mealPlanContent" style="display: none;">
-            <p>Your personalized meal plan will appear here after API integration.</p>
-        </div>
+        <div id="mealPlanContent" style="display: none;"></div>
         <button type="button" onclick="showStep('preferences')">Back</button>
+        <button type="button" id="regenerateButton" onclick="regenerateMealPlan()" style="display: none;">Regenerate</button>
     </section>
 
     <footer>
@@ -80,6 +79,8 @@
     </footer>
 
     <script>
+    let currentUserData = null;
+
     function showStep(step) {
         document.getElementById('biometrics').style.display = 'none';
         document.getElementById('preferences').style.display = 'none';
@@ -94,24 +95,66 @@
             progressBar.style.width = '66%';
         } else if (step === 'recommendations') {
             progressBar.style.width = '100%';
-            simulateLoading();
         }
     }
 
-    function validateForm(formId, buttonId) {
-        const form = document.getElementById(formId);
-        const button = document.getElementById(buttonId);
+    function validateAndProceed(step) {
+        if (step === 'preferences' && !validateBiometrics()) {
+            return;
+        }
+        if (step === 'recommendations' && !validatePreferences()) {
+            return;
+        }
+        if (step === 'recommendations') {
+            currentUserData = collectUserData();
+            generateMealPlan();
+        } else {
+            showStep(step);
+        }
+    }
 
-        form.addEventListener('input', () => {
-            const allFilled = Array.from(form.elements).every(input => {
-                if (input.hasAttribute('required')) {
-                    return input.value.trim() !== '';
-                }
-                return true;
-            });
+    function validateBiometrics() {
+        const form = document.getElementById('biometricForm');
+        const age = parseInt(form.age.value);
+        const weight = parseInt(form.weight.value);
+        const height = parseInt(form.height.value);
 
-            button.disabled = !allFilled;
-        });
+        if (isNaN(age) || age < 1 || age > 120) {
+            alert('Please enter a valid age between 1 and 120');
+            return false;
+        }
+        if (isNaN(weight) || weight < 50 || weight > 500) {
+            alert('Please enter a valid weight between 50 and 500 lbs');
+            return false;
+        }
+        if (isNaN(height) || height < 100 || height > 250) {
+            alert('Please enter a valid height between 100 and 250 cm');
+            return false;
+        }
+        if (!form.gender.value) {
+            alert('Please select your gender');
+            return false;
+        }
+        if (!form.activity.value) {
+            alert('Please select your activity level');
+            return false;
+        }
+        return true;
+    }
+
+    function validatePreferences() {
+        const form = document.getElementById('preferencesForm');
+        const budget = parseInt(form.budget.value);
+
+        if (!form.diet.value) {
+            alert('Please select your diet type');
+            return false;
+        }
+        if (isNaN(budget) || budget < 20 || budget > 1000) {
+            alert('Please enter a valid budget between $20 and $1000');
+            return false;
+        }
+        return true;
     }
 
     function collectUserData() {
@@ -132,72 +175,104 @@
         };
     }
 
-    async function callMealAI(userData) {
-        const apiKey = "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";
-
-        const prompt = `
-You are a nutritionist AI. Based on the following user information, create a healthy and budget-friendly weekly meal plan:
-- Age: ${userData.age}
-- Weight: ${userData.weight} lbs
-- Height: ${userData.height} cm
-- Gender: ${userData.gender}
-- Activity Level: ${userData.activity}
-- Diet Type: ${userData.diet}
-- Allergies: ${userData.allergies}
-- Likes: ${userData.likes}
-- Dislikes: ${userData.dislikes}
-- Budget: $${userData.budget} per week
-
-Provide breakfast, lunch, and dinner suggestions for each day of the week.
-`;
+    async function generateMealPlan() {
+        showStep('recommendations');
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('mealPlanContent').style.display = 'none';
+        document.getElementById('regenerateButton').style.display = 'none';
 
         try {
-            const response = await fetch('http://localhost:5000/generate-meal', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData)
-});
+            const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5000/generate-meal'
+                : '/generate-meal';
 
-            const data = await response.json();
-            const aiReply = data.choices[0].message.content;
-
-            document.getElementById('loadingSpinner').style.display = 'none';
-            document.getElementById('mealPlanContent').style.display = 'block';
-
-            // Format AI reply nicely
-            const days = aiReply.split(/\n(?=\w+day)/i);
-            let formattedHTML = '';
-            days.forEach(day => {
-                formattedHTML += `<div style="margin-bottom: 20px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                <h3>${day.split(':')[0]}</h3>
-                <p>${day.split(':').slice(1).join(':')}</p>
-                </div>`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(currentUserData)
             });
 
-            document.getElementById('mealPlanContent').innerHTML = formattedHTML;
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Server error: ${response.status}`);
+            }
 
+            const data = await response.json();
+
+            if (!data.mealPlan) {
+                throw new Error('No meal plan received from server');
+            }
+
+            displayMealPlan(data.mealPlan);
         } catch (error) {
-            console.error(error);
+            console.error('Error:', error);
+            document.getElementById('mealPlanContent').innerHTML = `
+                <div class="error-message">
+                    <p>Failed to generate meal plan:</p>
+                    <p>${error.message}</p>
+                    <p>Please try again later.</p>
+                </div>
+            `;
             document.getElementById('loadingSpinner').style.display = 'none';
             document.getElementById('mealPlanContent').style.display = 'block';
-            document.getElementById('mealPlanContent').innerHTML = `<p>Sorry, something went wrong. Please try again later.</p>`;
+            document.getElementById('regenerateButton').style.display = 'block';
         }
     }
 
-    function simulateLoading() {
-        document.getElementById('loadingSpinner').style.display = 'block';
-        document.getElementById('mealPlanContent').style.display = 'none';
+    function displayMealPlan(mealPlan) {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('mealPlanContent').style.display = 'block';
+        document.getElementById('regenerateButton').style.display = 'block';
 
-        const userData = collectUserData();
-        callMealAI(userData);
+        const formattedPlan = mealPlan
+            .replace(/\n/g, '<br>')
+            .replace(/(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday):/g, '<strong>$1:</strong>');
+
+        document.getElementById('mealPlanContent').innerHTML = `
+            <div class="meal-plan">
+                ${formattedPlan}
+            </div>
+        `;
+    }
+
+    function regenerateMealPlan() {
+        if (currentUserData) {
+            generateMealPlan();
+        } else {
+            showStep('biometrics');
+        }
+    }
+
+    function setupFormValidation() {
+        const biometricForm = document.getElementById('biometricForm');
+        const preferencesForm = document.getElementById('preferencesForm');
+
+        biometricForm.addEventListener('input', () => {
+            const allFilled = Array.from(biometricForm.elements).every(input => {
+                if (input.hasAttribute('required')) {
+                    return input.value.trim() !== '';
+                }
+                return true;
+            });
+            document.getElementById('nextToPreferences').disabled = !allFilled;
+        });
+
+        preferencesForm.addEventListener('input', () => {
+            const allFilled = Array.from(preferencesForm.elements).every(input => {
+                if (input.hasAttribute('required')) {
+                    return input.value.trim() !== '';
+                }
+                return true;
+            });
+            document.getElementById('nextToRecommendations').disabled = !allFilled;
+        });
     }
 
     window.onload = function() {
         showStep('biometrics');
-        validateForm('biometricForm', 'nextToPreferences');
-        validateForm('preferencesForm', 'nextToRecommendations');
+        setupFormValidation();
     };
     </script>
 </body>
