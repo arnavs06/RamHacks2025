@@ -1,0 +1,152 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Header and Progress Bar */
+header {
+    text-align: center;
+    padding: 30px 0;
+    position: relative;
+}
+
+header h1 {
+    font-size: 3rem;
+    color: #00ffe7;
+    text-shadow: 0 0 10px #00ffe7;
+}
+
+.progress-bar-container {
+    width: 80%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    margin: 20px auto 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 33%;
+    background: #00ffe7;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+/* Section Styling */
+section {
+    margin: 50px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    animation: fadeIn 0.8s ease-in;
+}
+
+section h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #00ffe7;
+    text-shadow: 0 0 8px #00ffe7;
+}
+
+/* Form Styling */
+form label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #00ffe7;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    margin-top: 5px;
+    transition: background-color 0.3s;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    background-color: rgba(0, 255, 255, 0.1);
+    outline: none;
+}
+
+/* Button Styling */
+button[type="button"] {
+    background-color: #00ffe7;
+    color: #0f0c29;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 10px 10px 0 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button[type="button"]:hover {
+    background-color: #ff00ff;
+    transform: scale(1.05);
+}
+
+/* Disabled Button */
+button[type="button"]:disabled {
+    background-color: #555555;
+    color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+/* Spinner */
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.2);
+    border-top: 8px solid #00ffe7;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Meal Plan Content */
+#mealPlanContent div {
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+#mealPlanContent h3 {
+    color: #00ffe7;
+    text-shadow: 0 0 8px #00ffe7;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Genius</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Meal Genius</h1>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <section id="biometrics">
+        <h2>Step 1: Enter Your Biometrics</h2>
+        <form id="biometricForm">
+            <label>Age: <input type="number" name="age" required></label><br><br>
+            <label>Weight (lbs): <input type="number" name="weight" required></label><br><br>
+            <label>Height (cm): <input type="number" name="height" required></label><br><br>
+            <label>Gender:
+                <select name="gender" required>
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </label><br><br>
+            <label>Activity Level:
+                <select name="activity" required>
+                    <option value="">Select</option>
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Lightly Active</option>
+                    <option value="moderate">Moderately Active</option>
+                    <option value="active">Very Active</option>
+                </select>
+            </label><br><br>
+            <button type="button" id="nextToPreferences" onclick="showStep('preferences')" disabled>Next</button>
+        </form>
+    </section>
+
+    <section id="preferences" style="display:none;">
+        <h2>Step 2: Food Preferences and Budget</h2>
+        <form id="preferencesForm">
+            <label>Diet Type:
+                <select name="diet" required>
+                    <option value="">Select</option>
+                    <option value="omnivore">Omnivore</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="keto">Keto</option>
+                    <option value="paleo">Paleo</option>
+                </select>
+            </label><br><br>
+            <label>Allergies (comma separated): <input type="text" name="allergies"></label><br><br>
+            <label>Food Likes (comma separated): <input type="text" name="likes"></label><br><br>
+            <label>Food Dislikes (comma separated): <input type="text" name="dislikes"></label><br><br>
+            <label>Budget (per week in $): <input type="number" name="budget" required></label><br><br>
+            <button type="button" onclick="showStep('biometrics')">Back</button>
+            <button type="button" id="nextToRecommendations" onclick="showStep('recommendations')" disabled>Next</button>
+        </form>
+    </section>
+
+    <section id="recommendations" style="display:none;">
+        <h2>Step 3: Your AI Meal Plan</h2>
+        <div id="loadingSpinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading your personalized plan...</p>
+        </div>
+        <div id="mealPlanContent" style="display: none;">
+            <p>Your personalized meal plan will appear here after API integration.</p>
+        </div>
+        <button type="button" onclick="showStep('preferences')">Back</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Meal Genius. All rights reserved.</p>
+    </footer>
+
+    <script>
+    function showStep(step) {
+        document.getElementById('biometrics').style.display = 'none';
+        document.getElementById('preferences').style.display = 'none';
+        document.getElementById('recommendations').style.display = 'none';
+
+        document.getElementById(step).style.display = 'block';
+
+        const progressBar = document.getElementById('progressBar');
+        if (step === 'biometrics') {
+            progressBar.style.width = '33%';
+        } else if (step === 'preferences') {
+            progressBar.style.width = '66%';
+        } else if (step === 'recommendations') {
+            progressBar.style.width = '100%';
+            simulateLoading();
+        }
+    }
+
+    function validateForm(formId, buttonId) {
+        const form = document.getElementById(formId);
+        const button = document.getElementById(buttonId);
+
+        form.addEventListener('input', () => {
+            const allFilled = Array.from(form.elements).every(input => {
+                if (input.hasAttribute('required')) {
+                    return input.value.trim() !== '';
+                }
+                return true;
+            });
+
+            button.disabled = !allFilled;
+        });
+    }
+
+    function collectUserData() {
+        const biometricForm = document.getElementById('biometricForm');
+        const preferencesForm = document.getElementById('preferencesForm');
+
+        return {
+            age: biometricForm.age.value,
+            weight: biometricForm.weight.value,
+            height: biometricForm.height.value,
+            gender: biometricForm.gender.value,
+            activity: biometricForm.activity.value,
+            diet: preferencesForm.diet.value,
+            allergies: preferencesForm.allergies.value,
+            likes: preferencesForm.likes.value,
+            dislikes: preferencesForm.dislikes.value,
+            budget: preferencesForm.budget.value,
+        };
+    }
+
+    async function callMealAI(userData) {
+        const apiKey = "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";
+
+        const prompt = `
+You are a nutritionist AI. Based on the following user information, create a healthy and budget-friendly weekly meal plan:
+- Age: ${userData.age}
+- Weight: ${userData.weight} lbs
+- Height: ${userData.height} cm
+- Gender: ${userData.gender}
+- Activity Level: ${userData.activity}
+- Diet Type: ${userData.diet}
+- Allergies: ${userData.allergies}
+- Likes: ${userData.likes}
+- Dislikes: ${userData.dislikes}
+- Budget: $${userData.budget} per week
+
+Provide breakfast, lunch, and dinner suggestions for each day of the week.
+`;
+
+        try {
+            const response = await fetch('http://localhost:5000/generate-meal', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData)
+});
+
+            const data = await response.json();
+            const aiReply = data.choices[0].message.content;
+
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('mealPlanContent').style.display = 'block';
+
+            // Format AI reply nicely
+            const days = aiReply.split(/\n(?=\w+day)/i);
+            let formattedHTML = '';
+            days.forEach(day => {
+                formattedHTML += `<div style="margin-bottom: 20px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                <h3>${day.split(':')[0]}</h3>
+                <p>${day.split(':').slice(1).join(':')}</p>
+                </div>`;
+            });
+
+            document.getElementById('mealPlanContent').innerHTML = formattedHTML;
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('mealPlanContent').style.display = 'block';
+            document.getElementById('mealPlanContent').innerHTML = `<p>Sorry, something went wrong. Please try again later.</p>`;
+        }
+    }
+
+    function simulateLoading() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('mealPlanContent').style.display = 'none';
+
+        const userData = collectUserData();
+        callMealAI(userData);
+    }
+
+    window.onload = function() {
+        showStep('biometrics');
+        validateForm('biometricForm', 'nextToPreferences');
+        validateForm('preferencesForm', 'nextToRecommendations');
+    };
+    </script>
+</body>
+</html>
